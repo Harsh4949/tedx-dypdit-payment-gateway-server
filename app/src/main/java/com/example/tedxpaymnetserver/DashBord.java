@@ -26,7 +26,7 @@ public class DashBord extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        addTransactionCard("123456", 500, "10:00 AM");
+        addTransactionCard("#23343", 599, "10.00 PM");
     }
 
     private void addTransactionCard(String refNo, int amount, String time) {

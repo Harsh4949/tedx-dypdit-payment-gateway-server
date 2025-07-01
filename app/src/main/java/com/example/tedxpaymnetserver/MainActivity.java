@@ -3,7 +3,6 @@ package com.example.tedxpaymnetserver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +25,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Start Logic Form Here
+
+    }
+
+    public void onStopServer(View view) {
+
+        Intent intent = new Intent(this, Setup.class);
+        startActivity(intent);
 
     }
 
