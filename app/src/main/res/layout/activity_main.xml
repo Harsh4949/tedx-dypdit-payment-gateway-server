@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    tools:context=".MainActivity"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserratli"
+        android:text="TEDx Server "
+        android:textSize="30sp"
+        android:textColor="#D32F2F"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        />
+
+    <!-- Center Anchor View (Invisible, used for alignment) -->
+    <View
+        android:id="@+id/center_point"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true" />
+
+    <!-- Setup Button (Top) -->
+    <Button
+        android:id="@+id/btn_setup"
+        android:layout_width="145dp"
+        android:layout_height="wrap_content"
+        android:text="Setup"
+        android:textStyle="bold"
+        android:fontFamily="@font/montserratli"
+        android:textColor="#FFFFFF"
+        android:layout_above="@id/center_point"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="80dp"/>
+
+    <!-- Start Button (Left) -->
+    <Button
+        android:id="@+id/btn_start"
+        android:layout_width="135dp"
+        android:layout_height="wrap_content"
+        android:text="Start"
+        android:fontFamily="@font/montserratli"
+        android:textStyle="bold"
+
+        android:textColor="#FFFFFF"
+        android:layout_toLeftOf="@id/center_point"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="50dp"/>
+
+    <!-- Stop Button (Right) -->
+    <Button
+        android:id="@+id/btn_stop"
+        android:layout_width="135dp"
+        android:layout_height="wrap_content"
+        android:text="Stop"
+        android:fontFamily="@font/montserratli"
+        android:textStyle="bold"
+
+        android:textColor="#FFFFFF"
+        android:layout_toRightOf="@id/center_point"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="50dp"/>
+
+    <!-- Dashboard Button (Bottom) -->
+    <Button
+        android:id="@+id/btn_dashboard"
+        android:layout_width="145dp"
+        android:layout_height="wrap_content"
+        android:text="Dashboard"
+        android:fontFamily="@font/montserratli"
+        android:textStyle="bold"
+        android:onClick="onViewDashboard"
+        android:textColor="#FFFFFF"
+        android:layout_below="@id/center_point"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/displayMsg"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="🔴 Server Stopped..."
+        android:fontFamily="@font/montserratli"
+        android:textStyle="bold"
+        android:layout_marginBottom="30dp"
+        />
+</RelativeLayout>

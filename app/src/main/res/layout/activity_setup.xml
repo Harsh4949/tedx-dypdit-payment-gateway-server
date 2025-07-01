@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/setup_Server"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Setup"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/setupTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TEDx Server Setup"
+            android:fontFamily="@font/montserratli"
+            android:textSize="24sp"
+            android:layout_marginTop="20dp"
+            android:textStyle="bold"
+            android:textColor="#E62B1E"
+            android:layout_gravity="center_horizontal" />
+
+        <!-- SMS Permission Card -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_sms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            android:elevation="4dp"
+            android:foreground="?android:attr/selectableItemBackground">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="#FFFFFF">
+
+                <ImageView
+                    android:id="@+id/cardview_sms_image"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginEnd="18dp"
+                    android:contentDescription="SMS Icon"
+                    android:src="@drawable/baseline_sms_35" />
+
+                <TextView
+                    android:id="@+id/textsmspermision"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/cardview_sms_image"
+                    android:layout_alignTop="@id/cardview_sms_image"
+                    android:layout_marginTop="5dp"
+                    android:text=" SMS Permission"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/comfortaalight"
+                    android:textStyle="bold" />
+
+                <Switch
+                    android:id="@+id/swich_admin_permission"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Admin Permission -->
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardview_admin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:elevation="4dp"
+            android:foreground="?android:attr/selectableItemBackground">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:background="#FFFFFF">
+
+                <ImageView
+                    android:id="@+id/cardview_admin_image"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginEnd="18dp"
+                    android:contentDescription="SMS Icon"
+                    android:src="@drawable/baseline_admin_panel_settings_24" />
+
+                <TextView
+                    android:id="@+id/textadminpermision"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/cardview_admin_image"
+                    android:layout_alignTop="@id/cardview_admin_image"
+                    android:layout_marginTop="5dp"
+                    android:text=" Admin Permission"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/comfortaalight"
+                    android:textStyle="bold" />
+
+                <Switch
+                    android:id="@+id/swich_sms_permission"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+
+        <!-- Ticket Amount -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ticketAmountLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:hint="Ticket Amount (₹)">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ticketAmount"
+                android:layout_width="match_parent"
+                android:textStyle="bold"
+
+                android:fontFamily="@font/montserratli"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Server Holder Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/serverHolderLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Server Holder Name">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/serverHolder"
+                android:layout_width="match_parent"
+                android:textStyle="bold"
+                android:fontFamily="@font/montserratli"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Admin Password -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/passwordLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Admin Password"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/adminPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Confirm Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/confirmSetupBtn"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:textStyle="bold"
+            android:fontFamily="@font/montserratli"
+            android:layout_marginTop="40dp"
+            android:text="Confirm Setup"
+            android:textSize="18dp"
+            android:textAllCaps="false"
+            android:backgroundTint="#E62B1E"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+</ScrollView>
