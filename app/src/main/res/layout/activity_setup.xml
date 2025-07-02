@@ -11,8 +11,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center_horizontal"
+        android:orientation="vertical"
         android:padding="24dp">
 
         <!-- Title -->
@@ -20,13 +20,13 @@
             android:id="@+id/setupTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TEDx Server Setup"
-            android:fontFamily="@font/montserratli"
-            android:textSize="24sp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
-            android:textStyle="bold"
+            android:fontFamily="@font/montserratli"
+            android:text="TEDx Server Setup"
             android:textColor="#E62B1E"
-            android:layout_gravity="center_horizontal" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <!-- SMS Permission Card -->
         <androidx.cardview.widget.CardView
@@ -40,8 +40,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:background="#FFFFFF">
+                android:background="#FFFFFF"
+                android:padding="10dp">
 
                 <ImageView
                     android:id="@+id/cardview_sms_image"
@@ -56,12 +56,12 @@
                     android:id="@+id/textsmspermision"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/cardview_sms_image"
                     android:layout_alignTop="@id/cardview_sms_image"
                     android:layout_marginTop="5dp"
+                    android:layout_toEndOf="@id/cardview_sms_image"
+                    android:fontFamily="@font/comfortaalight"
                     android:text=" SMS Permission"
                     android:textSize="15sp"
-                    android:fontFamily="@font/comfortaalight"
                     android:textStyle="bold" />
 
                 <Switch
@@ -86,8 +86,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:background="#FFFFFF">
+                android:background="#FFFFFF"
+                android:padding="10dp">
 
                 <ImageView
                     android:id="@+id/cardview_admin_image"
@@ -102,12 +102,12 @@
                     android:id="@+id/textadminpermision"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/cardview_admin_image"
                     android:layout_alignTop="@id/cardview_admin_image"
                     android:layout_marginTop="5dp"
+                    android:layout_toEndOf="@id/cardview_admin_image"
+                    android:fontFamily="@font/comfortaalight"
                     android:text=" Admin Permission"
                     android:textSize="15sp"
-                    android:fontFamily="@font/comfortaalight"
                     android:textStyle="bold" />
 
                 <Switch
@@ -127,14 +127,33 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:hint="Ticket Amount (₹)">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ticketAmount"
                 android:layout_width="match_parent"
-                android:textStyle="bold"
+                android:layout_height="wrap_content"
 
                 android:fontFamily="@font/montserratli"
+                android:inputType="text"
+                android:textStyle="bold" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Ticket Amount -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/BankNameMsgLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:hint="Bank Name (Icluded In Msg.)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/BankNameMsg"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number" />
+
+                android:fontFamily="@font/montserratli"
+                android:inputType="text"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Server Holder Name -->
@@ -148,15 +167,15 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/serverHolder"
                 android:layout_width="match_parent"
-                android:textStyle="bold"
-                android:fontFamily="@font/montserratli"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
+                android:fontFamily="@font/montserratli"
+                android:inputType="textPersonName"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Admin Password -->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/passwordLayout"
+            android:id="@+id/AdminpasswordLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -175,14 +194,14 @@
             android:id="@+id/confirmSetupBtn"
             android:layout_width="match_parent"
             android:layout_height="55dp"
-            android:textStyle="bold"
-            android:fontFamily="@font/montserratli"
             android:layout_marginTop="40dp"
-            android:text="Confirm Setup"
-            android:textSize="18dp"
-            android:textAllCaps="false"
             android:backgroundTint="#E62B1E"
+            android:fontFamily="@font/montserratli"
+            android:text="Confirm Setup"
+            android:textAllCaps="false"
             android:textColor="#FFFFFF"
+            android:textSize="18dp"
+            android:textStyle="bold"
             app:cornerRadius="12dp" />
 
     </LinearLayout>

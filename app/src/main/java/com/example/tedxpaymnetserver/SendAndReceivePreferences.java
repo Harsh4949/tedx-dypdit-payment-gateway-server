@@ -27,4 +27,5 @@ public class SendAndReceivePreferences {
         SharedPreferences sharedPreferences = context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(key, b);
     }
+
 }

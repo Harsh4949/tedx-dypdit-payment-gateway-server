@@ -33,7 +33,7 @@
         android:layout_width="145dp"
         android:layout_height="wrap_content"
         android:text="Setup"
-        android:onClick="onStopServer"
+        android:onClick="onSetupServer"
         android:textStyle="bold"
         android:fontFamily="@font/montserratli"
         android:textColor="#FFFFFF"
@@ -47,6 +47,7 @@
         android:layout_width="135dp"
         android:layout_height="wrap_content"
         android:text="Start"
+        android:onClick="onStartServer"
         android:fontFamily="@font/montserratli"
         android:textStyle="bold"
 
@@ -61,6 +62,7 @@
         android:layout_width="135dp"
         android:layout_height="wrap_content"
         android:text="Stop"
+        android:onClick="onStopServer"
         android:fontFamily="@font/montserratli"
         android:textStyle="bold"
 
