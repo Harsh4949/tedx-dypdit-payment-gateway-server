@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends AppCompatActivity {
 
     TextView displayMsg;
-    Boolean isSetupDone;
+    Boolean isSetupDone, onStopBtnClicked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +27,10 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
 
+            onStopBtnClicked = SendAndReceivePreferences.getboolean(getApplicationContext(), "onStopBtnClicked", false);
             isSetupDone = SendAndReceivePreferences.getboolean(getApplicationContext(), "isServerSetupDone", false);
-            String setServerStatus = (isSetupDone ? "\uD83D\uDFE2 Server Started..." : "\uD83D\uDD34 Server Stopped...");
+
+            String setServerStatus = ((onStopBtnClicked || isSetupDone) ? "\uD83D\uDFE2 Server Started..." : "\uD83D\uDD34 Server Stopped...");
             ((TextView) findViewById(R.id.displayMsg)).setText(setServerStatus);
 
             //initialize layout before it render
@@ -46,14 +48,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isSetupDone) {
             Toast.makeText(this, "🚫 Complete setup first...", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        if (isSetupDone) {
+        } else if (!onStopBtnClicked) {
+            SendAndReceivePreferences.setboolean(getApplicationContext(), "onStopBtnClicked", true);
+            displayMsg.setText("\uD83D\uDFE2 Server Started...");
+        } else if (isSetupDone && onStopBtnClicked) {
             Toast.makeText(this, "⚙️ Server is already running.", Toast.LENGTH_SHORT).show();
-            displayMsg.setText("\uD83D\uDFE2 Server Started");
         }
-
 
     }
 
@@ -61,9 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (!isSetupDone) {
             Toast.makeText(this, "🚫 Complete setup first...", Toast.LENGTH_SHORT).show();
-            return;
         }
 
+        SendAndReceivePreferences.setboolean(getApplicationContext(), "onStopBtnClicked", false);
         displayMsg.setText("\uD83D\uDD34 Server Stopped...");
     }
 

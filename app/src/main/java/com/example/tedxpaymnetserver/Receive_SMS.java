@@ -21,7 +21,8 @@ public class Receive_SMS extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         boolean isSetupDone = SendAndReceivePreferences.getboolean(context, "isServerSetupDone", false);
-        if (!isSetupDone) return; // Exit if not setup
+        boolean onStopBtnClicked = SendAndReceivePreferences.getboolean(context, "onStopBtnClicked", false);
+        if (!(onStopBtnClicked && isSetupDone)) return; // Exit if not setup
 
 
         //  Get the stored ticket prices string, sender ID, Server Holdername
@@ -40,12 +41,19 @@ public class Receive_SMS extends BroadcastReceiver {
             String mobno = smsMessage.getDisplayOriginatingAddress();
             String msg = smsMessage.getDisplayMessageBody();
 
-            if (msg != null) {
-                // SmsManager smsManager = SmsManager.getDefault();
+            String refNo = extractRefNo(msg);
+            try {
+                if (refNo != "") {
+                    // SmsManager smsManager = SmsManager.getDefault();
 
-                Toast.makeText(context, extractRefNo(msg), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, refNo, Toast.LENGTH_LONG).show();
 
-                // smsManager.sendTextMessage(mobno, null, "Hi", null, null);
+                    // smsManager.sendTextMessage(mobno, null, "Hi", null, null);
+                }
+
+            } catch (Exception e) {
+                Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+
             }
 
         }
