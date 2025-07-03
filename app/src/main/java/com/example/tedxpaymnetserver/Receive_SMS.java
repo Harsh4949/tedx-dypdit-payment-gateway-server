@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,22 +39,25 @@ public class Receive_SMS extends BroadcastReceiver {
 
         for (Object obj : smsObj) {
             SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) obj, format);
-            String mobno = smsMessage.getDisplayOriginatingAddress();
+            String msgReceivedSenderBank = smsMessage.getDisplayOriginatingAddress();
             String msg = smsMessage.getDisplayMessageBody();
 
             String refNo = extractRefNo(msg);
+
             try {
-                if (refNo != "") {
-                    // SmsManager smsManager = SmsManager.getDefault();
+                if ((!Objects.equals(refNo, "")) && Objects.equals(msgReceivedSenderBank, expectedSender)) {
 
-                    Toast.makeText(context, refNo, Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, refNo + msgReceivedSenderBank, Toast.LENGTH_LONG).show();
 
-                    // smsManager.sendTextMessage(mobno, null, "Hi", null, null);
+                    // 🔔 Send broadcast to update UI
+                    Intent update = new Intent("com.example.UPDATE_UI");
+                    update.putExtra("ref_no", refNo);
+                    context.sendBroadcast(update);
+
                 }
 
             } catch (Exception e) {
-                Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
-
+                //  Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
         }
@@ -64,6 +68,7 @@ public class Receive_SMS extends BroadcastReceiver {
         // This pattern will match any standalone 12-digit number
         Pattern pattern = Pattern.compile("\\b\\d{12}\\b");
         Matcher matcher = pattern.matcher(msg);
+
         while (matcher.find()) {
             return matcher.group();  // Return first matched 12-digit number
         }
@@ -76,18 +81,18 @@ public class Receive_SMS extends BroadcastReceiver {
          * Extracts the 12-digit UPI reference number securely for a known sender
          *
          * @param msg                the full SMS content
-         * @param expectedSender     the exact expected sender ID (e.g., "AX-IPBMSG-S")
+         * @param expectedSenderBank     the exact expected sender ID (e.g., "AX-IPBMSG-S")
          * @param expectedAmountList list of valid amounts like "1.00", "307.00"
          * @return 12-digit UPI reference number, or null if not valid
          */
 
         @Nullable
-        public String extractUpiRefFromTrustedSender(String msg, String expectedSender, String msgSenderId, List<String> expectedAmountList) {
+        public String extractUpiRefFromTrustedSender(String msg, String expectedSenderBank, String msgReceivedSenderBank, List<String> expectedAmountList) {
 
             String lowerMsg = msg.toLowerCase();
 
             // 1. Match only if sender is trusted
-            if (!expectedSender.equals(msgSenderId)) {
+            if (!expectedSenderBank.equals(msgReceivedSenderBank)) {
                 return null; // Block all unknown senders
             }
 

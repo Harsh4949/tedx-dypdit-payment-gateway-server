@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
             onStopBtnClicked = SendAndReceivePreferences.getboolean(getApplicationContext(), "onStopBtnClicked", false);
             isSetupDone = SendAndReceivePreferences.getboolean(getApplicationContext(), "isServerSetupDone", false);
 
-            String setServerStatus = ((onStopBtnClicked || isSetupDone) ? "\uD83D\uDFE2 Server Started..." : "\uD83D\uDD34 Server Stopped...");
+            String setServerStatus = ((onStopBtnClicked && isSetupDone) ? "\uD83D\uDFE2 Server Started..." : "\uD83D\uDD34 Server Stopped...");
             ((TextView) findViewById(R.id.displayMsg)).setText(setServerStatus);
 
             //initialize layout before it render
@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onViewDashboard(View view) {
+
         if (!isSetupDone) {
             Toast.makeText(this, "🚫 Complete setup first...", Toast.LENGTH_SHORT).show();
             return;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, DashBord.class);
         startActivity(intent);
+
     }
 
 }

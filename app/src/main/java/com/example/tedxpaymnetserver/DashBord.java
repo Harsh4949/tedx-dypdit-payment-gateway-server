@@ -1,7 +1,12 @@
 package com.example.tedxpaymnetserver;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -16,6 +21,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class DashBord extends AppCompatActivity {
 
+    BroadcastReceiver updateReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +33,18 @@ public class DashBord extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        addTransactionCard("#23343", 599, "10.00 PM");
+
+        // ✅ Define the receiver safely
+        updateReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String refNo = intent.getStringExtra("ref_no");
+                if (refNo != null) {
+                    addTransactionCard(refNo, 599, "10:00 PM");
+                }
+            }
+        };
+
     }
 
     private void addTransactionCard(String refNo, int amount, String time) {
@@ -76,4 +94,21 @@ public class DashBord extends AppCompatActivity {
         container.addView(cardView);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // ✅ Register the local receiver
+        IntentFilter filter = new IntentFilter("com.example.UPDATE_UI");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(updateReceiver, filter, Context.RECEIVER_EXPORTED);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (updateReceiver != null) {
+            unregisterReceiver(updateReceiver);
+        }
+    }
 }
