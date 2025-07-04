@@ -144,7 +144,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:hint="Bank Name (Icluded In Msg.)">
+            android:hint="Bank Name (Included In Msg.)">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/BankNameMsg"

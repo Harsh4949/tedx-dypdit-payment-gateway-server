@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">TEDxPaymnetServer</string>
+    <string name="app_name">TEDxPaymentServer</string>
     <string name="start_server_button_text">Start\nServer</string>
 </resources>

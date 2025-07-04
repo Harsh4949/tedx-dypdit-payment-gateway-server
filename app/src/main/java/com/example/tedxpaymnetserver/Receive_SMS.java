@@ -5,10 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -43,21 +46,20 @@ public class Receive_SMS extends BroadcastReceiver {
             String msg = smsMessage.getDisplayMessageBody();
 
             String refNo = extractRefNo(msg);
+            String extractedAmount = extractValidAmount(msg);
 
             try {
-                if ((!Objects.equals(refNo, "")) && Objects.equals(msgReceivedSenderBank, expectedSender)) {
+                if ((!Objects.equals(refNo, ""))) { // && expectedSender.equals(msgReceivedSenderBank)
 
                     Toast.makeText(context, refNo + msgReceivedSenderBank, Toast.LENGTH_LONG).show();
 
-                    // 🔔 Send broadcast to update UI
-                    Intent update = new Intent("com.example.UPDATE_UI");
-                    update.putExtra("ref_no", refNo);
-                    context.sendBroadcast(update);
+                    LocalTransactionStorage.saveTransaction(context, new TransactionModel(refNo, extractedAmount, getCurrentDateTime()));
+
 
                 }
 
             } catch (Exception e) {
-                //  Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e("Receive_SMS", "Error processing SMS: " + e.getMessage());
             }
 
         }
@@ -74,6 +76,24 @@ public class Receive_SMS extends BroadcastReceiver {
         }
         return null;
     }
+
+    private String extractValidAmount(String msg) {
+        // Regex Explanation:
+        // Optional INR/Rs followed by up to 4 digits (optionally with comma like 1,000) ending with .00
+        Pattern pattern = Pattern.compile("(?:INR\\s*|Rs\\.\\s*)?(\\d{1,4}(?:,\\d{3})?)\\.00\\b");
+        Matcher matcher = pattern.matcher(msg);
+        if (matcher.find()) {
+            return matcher.group(1); // ✅ Captures the amount before `.00`
+        }
+        return null;
+    }
+
+    private String getCurrentDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return now.format(formatter);
+    }
+
 
     private class UpiRefValidator {
 
@@ -96,18 +116,13 @@ public class Receive_SMS extends BroadcastReceiver {
                 return null; // Block all unknown senders
             }
 
-            // 2. Must contain "upi/credit/"
-            if (!lowerMsg.contains("upi/credit/")) {
-                return null;
-            }
-
-            // 3. Must contain a valid amount
+            // 2. Must contain a valid amount
             if (!containsValidAmount(lowerMsg, expectedAmountList)) {
                 return null;
             }
 
-            // 4. Extract 12 digit ref no only
-            Pattern pattern = Pattern.compile("\\b\\d{12}\\b");
+            // 3. Extract 12 digit ref no only
+            Pattern pattern = Pattern.compile("\\b([0-9]{12})\\b");
             Matcher matcher = pattern.matcher(lowerMsg);
             if (matcher.find()) {
                 return matcher.group(1); // return only if all checks pass
