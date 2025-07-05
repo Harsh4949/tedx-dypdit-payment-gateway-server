@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +32,9 @@ public class Receive_SMS extends BroadcastReceiver {
         String ticketPrices = SendAndReceivePreferences.retriveData(context, "ticketAmounts", "");
         List<String> expectedAmountList = Arrays.asList(ticketPrices.split(" "));
 
+        String MsgContext = SendAndReceivePreferences.retriveData(context, "MsgContext", "");
+        List<String> contextKeywords = Arrays.asList(MsgContext.split(" "));
+
         String expectedSender = SendAndReceivePreferences.retriveData(context, "bankSenderId", "");
         String serverHolder = SendAndReceivePreferences.retriveData(context, "serverHolder", "");
 
@@ -46,10 +48,11 @@ public class Receive_SMS extends BroadcastReceiver {
             String msg = smsMessage.getDisplayMessageBody();
 
             String refNo = extractRefNo(msg);
-            String extractedAmount = extractValidAmount(msg);
+            //UpiRefValidator.extractUpiRefFromTrustedSender(msg, expectedSender, msgReceivedSenderBank, expectedAmountList, contextKeywords);
+            String extractedAmount = UpiRefValidator.extractValidAmount(msg);
 
             try {
-                if ((!Objects.equals(refNo, ""))) { // && expectedSender.equals(msgReceivedSenderBank)
+                if (refNo != null) { // && expectedSender.equals(msgReceivedSenderBank)
 
                     Toast.makeText(context, refNo + msgReceivedSenderBank, Toast.LENGTH_LONG).show();
 
@@ -77,16 +80,7 @@ public class Receive_SMS extends BroadcastReceiver {
         return null;
     }
 
-    private String extractValidAmount(String msg) {
-        // Regex Explanation:
-        // Optional INR/Rs followed by up to 4 digits (optionally with comma like 1,000) ending with .00
-        Pattern pattern = Pattern.compile("(?:INR\\s*|Rs\\.\\s*)?(\\d{1,4}(?:,\\d{3})?)\\.00\\b");
-        Matcher matcher = pattern.matcher(msg);
-        if (matcher.find()) {
-            return matcher.group(1); // ✅ Captures the amount before `.00`
-        }
-        return null;
-    }
+
 
     private String getCurrentDateTime() {
         LocalDateTime now = LocalDateTime.now();
@@ -95,7 +89,7 @@ public class Receive_SMS extends BroadcastReceiver {
     }
 
 
-    private class UpiRefValidator {
+    private static class UpiRefValidator {
 
         /**
          * Extracts the 12-digit UPI reference number securely for a known sender
@@ -107,14 +101,14 @@ public class Receive_SMS extends BroadcastReceiver {
          */
 
         @Nullable
-        public String extractUpiRefFromTrustedSender(String msg, String expectedSenderBank, String msgReceivedSenderBank, List<String> expectedAmountList) {
+        public static String extractUpiRefFromTrustedSender(String msg, String expectedSenderBank, String msgReceivedSenderBank, List<String> expectedAmountList, List<String> amounts) {
 
             String lowerMsg = msg.toLowerCase();
 
-            // 1. Match only if sender is trusted
-            if (!expectedSenderBank.equals(msgReceivedSenderBank)) {
-                return null; // Block all unknown senders
-            }
+//            // 1. Match only if sender is trusted
+//            if (!expectedSenderBank.equals(msgReceivedSenderBank)) {
+//                return null; // Block all unknown senders
+//            }
 
             // 2. Must contain a valid amount
             if (!containsValidAmount(lowerMsg, expectedAmountList)) {
@@ -128,10 +122,15 @@ public class Receive_SMS extends BroadcastReceiver {
                 return matcher.group(1); // return only if all checks pass
             }
 
+            if (extractUPIRefWithContext(msg, amounts) == null) {
+                return null;
+            }
+
+
             return null;
         }
 
-        private boolean containsValidAmount(String msg, List<String> amounts) {
+        private static boolean containsValidAmount(String msg, List<String> amounts) {
             for (String amt : amounts) {
                 if (msg.contains(amt.toLowerCase())) {
                     return true;
@@ -139,6 +138,44 @@ public class Receive_SMS extends BroadcastReceiver {
             }
             return false;
         }
+
+        public static String extractUPIRefWithContext(String msg, List<String> contextKeywords) {
+            // Convert message to lowercase for case-insensitive matching
+            String lowerMsg = msg.toLowerCase();
+
+            // 1. Check if message contains any of the keywords like "credited", "received", "upi/credit"
+            boolean isCredit = false;
+            for (String keyword : contextKeywords) {
+                if (lowerMsg.contains(keyword.toLowerCase())) {
+                    isCredit = true;
+                    break;
+                }
+            }
+
+            // 2. If context is valid, extract the 12-digit UPI reference number
+            if (isCredit) {
+                Pattern pattern = Pattern.compile("\\b([0-9]{12})\\b");
+                Matcher matcher = pattern.matcher(msg);
+                if (matcher.find()) {
+                    return matcher.group(1); // ✅ Return first matched 12-digit ref no
+                }
+            }
+
+            // ❌ Not matched or context didn't validate
+            return null;
+        }
+
+        private static String extractValidAmount(String msg) {
+            // Regex Explanation:
+            // Optional INR/Rs followed by up to 4 digits (optionally with comma like 1,000) ending with .00
+            Pattern pattern = Pattern.compile("(?:INR\\s*|Rs\\.\\s*)?(\\d{1,4}(?:,\\d{3})?)\\.00\\b");
+            Matcher matcher = pattern.matcher(msg);
+            if (matcher.find()) {
+                return matcher.group(1); // ✅ Captures the amount before `.00`
+            }
+            return null;
+        }
+
     }
 
 

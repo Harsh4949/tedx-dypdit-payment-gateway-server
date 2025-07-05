@@ -26,7 +26,7 @@ public class Setup extends AppCompatActivity {
     public static final int ADMIN_INTENT = 15, REquestlocation = 1;
     static Switch adminPermission, smsPermission;
     Button confirmSetupBtn;
-    EditText ticketAmount, serverHolder, adminPassword, BankNameMsg;
+    EditText ticketAmount, serverHolder, adminPassword, BankNameMsg, MsgContext;
     DevicePolicyManager mDevicePolicyManager;
     ComponentName mComponentName;
 
@@ -48,6 +48,8 @@ public class Setup extends AppCompatActivity {
                 ticketAmount.setEnabled(false);
                 BankNameMsg.setText(SendAndReceivePreferences.retriveData(getApplicationContext(), "bankSenderId", ""));
                 BankNameMsg.setEnabled(false);
+                MsgContext.setText(SendAndReceivePreferences.retriveData(getApplicationContext(), "MsgContext", ""));
+                MsgContext.setEnabled(false);
                 confirmSetupBtn.setVisibility(View.GONE);
                 findViewById(R.id.AdminpasswordLayout).setVisibility(View.GONE);
             }
@@ -67,6 +69,7 @@ public class Setup extends AppCompatActivity {
         serverHolder = findViewById(R.id.serverHolder);
         adminPassword = findViewById(R.id.adminPassword);
         BankNameMsg = findViewById(R.id.BankNameMsg);
+        MsgContext = findViewById(R.id.MsgContext);
 
         smsPermission.setChecked(SendAndReceivePreferences.getboolean(getApplicationContext(), "smsPermission", false));
         adminPermission.setChecked(SendAndReceivePreferences.getboolean(getApplicationContext(), "adminPermission", false));
@@ -79,6 +82,7 @@ public class Setup extends AppCompatActivity {
 
 
                     SendAndReceivePreferences.storeData(getApplicationContext(), "bankSenderId", BankNameMsg.getText().toString());
+                    SendAndReceivePreferences.storeData(getApplicationContext(), "MsgContext", MsgContext.getText().toString());
                     SendAndReceivePreferences.storeData(getApplicationContext(), "ticketAmounts", ticketAmount.getText().toString());
                     SendAndReceivePreferences.storeData(getApplicationContext(), "serverHolder", serverHolder.getText().toString());
                     SendAndReceivePreferences.setboolean(getApplicationContext(), "isServerSetupDone", true);

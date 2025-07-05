@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
-        android:layout_marginTop="59dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="2dp"
         android:orientation="horizontal"
         android:weightSum="2">
@@ -118,6 +118,7 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
+
     <!-- Scrollable Transaction List -->
     <ScrollView
         android:layout_width="match_parent"
@@ -133,5 +134,18 @@
             android:layout_marginEnd="12dp"
             android:orientation="vertical" />
     </ScrollView>
+
+    <Button
+        android:id="@+id/clearDataBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="125dp"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="#E62B1E"
+        android:fontFamily="@font/montserratli"
+        android:onClick="onclearDataBtnClicked"
+        android:text="Clear Data"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
 
 </LinearLayout>

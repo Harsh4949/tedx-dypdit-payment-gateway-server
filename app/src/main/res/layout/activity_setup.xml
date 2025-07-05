@@ -33,7 +33,7 @@
             android:id="@+id/cardview_sms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="60dp"
             android:elevation="4dp"
             android:foreground="?android:attr/selectableItemBackground">
 
@@ -173,6 +173,23 @@
                 android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- Message Context Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/MsgContextLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Message Context">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/MsgContext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserratli"
+                android:inputType="text"
+                android:textStyle="bold" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <!-- Admin Password -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/AdminpasswordLayout"
@@ -201,6 +218,7 @@
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             android:textSize="18dp"
+            android:layout_marginBottom="800px"
             android:textStyle="bold"
             app:cornerRadius="12dp" />
 

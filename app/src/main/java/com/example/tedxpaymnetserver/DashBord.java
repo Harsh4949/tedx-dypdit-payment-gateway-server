@@ -4,9 +4,11 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,23 +39,10 @@ public class DashBord extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.dashBord_layout), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-
-            transactions = LocalTransactionStorage.getAllTransactions(this);
-            for (TransactionModel transaction : transactions) {
-                addTransactionCard(transaction.getRefNo(), transaction.getAmount(), transaction.getTimestamp());
-                try {
-                    totalAmount += Double.parseDouble(transaction.getAmount());
-                    totalTransactions++;
-                } catch (NumberFormatException e) {
-                    Log.e("DashBord", "Error parsing amount: " + transaction.getAmount(), e);
-                }
-            }
-
-            totalTransactionsTextView.setText("" + totalTransactions);
-            totalAmountTextView.setText("₹ " + String.format("%.2f", totalAmount));
-
+            loadTransactions();
             return insets;
         });
+
 
     }
 
@@ -105,4 +94,46 @@ public class DashBord extends AppCompatActivity {
         container.addView(cardView);
     }
 
+    private void loadTransactions() {
+        // Reset totals before recounting
+        totalAmount = 0.0;
+        totalTransactions = 0;
+
+        // Get transaction list
+        transactions = LocalTransactionStorage.getAllTransactions(this);
+
+        // ✅ Clear previous transaction views to prevent duplication
+        LinearLayout container = findViewById(R.id.transactionListContainer);
+        container.removeAllViews();
+
+        // Loop through each transaction and populate UI
+        for (TransactionModel transaction : transactions) {
+            addTransactionCard(transaction.getRefNo(), transaction.getAmount(), transaction.getTimestamp());
+
+            try {
+                totalAmount += Double.parseDouble(transaction.getAmount());
+                totalTransactions++;
+            } catch (NumberFormatException e) {
+                Log.e("DashBord", "Error parsing amount: " + transaction.getAmount(), e);
+            }
+        }
+
+        // Set totals in summary TextViews
+        totalTransactionsTextView.setText(String.valueOf(totalTransactions));
+        totalAmountTextView.setText("₹ " + String.format("%.2f", totalAmount));
+    }
+
+
+    public void onclearDataBtnClicked(View view) {
+
+        LocalTransactionStorage.clearAllTransactions(getApplicationContext());
+        LinearLayout container = findViewById(R.id.transactionListContainer);
+        container.removeAllViews();
+        totalTransactions = 0;
+        totalAmount = 0.0;
+        totalTransactionsTextView.setText("0");
+        totalAmountTextView.setText("₹ 0.00");
+
+        Toast.makeText(DashBord.this, "All transaction data cleared ✅", Toast.LENGTH_SHORT).show();
+    }
 }
