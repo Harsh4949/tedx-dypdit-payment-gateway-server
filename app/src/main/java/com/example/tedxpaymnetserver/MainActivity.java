@@ -3,6 +3,7 @@ package com.example.tedxpaymnetserver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+        Button resendBufferBtn = findViewById(R.id.btn_resend_buffer);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
             onStopBtnClicked = SendAndReceivePreferences.getboolean(getApplicationContext(), "onStopBtnClicked", false);
             isSetupDone = SendAndReceivePreferences.getboolean(getApplicationContext(), "isServerSetupDone", false);
 
-            String setServerStatus = ((onStopBtnClicked && isSetupDone) ? "\uD83D\uDFE2 Server Started..." : "\uD83D\uDD34 Server Stopped...");
+            String setServerStatus = ((!(onStopBtnClicked) && isSetupDone) ? "\uD83D\uDFE2 Server Started..." : "\uD83D\uDD34 Server Stopped...");
             ((TextView) findViewById(R.id.displayMsg)).setText(setServerStatus);
 
             //initialize layout before it render
@@ -39,6 +41,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         displayMsg = findViewById(R.id.displayMsg);
+
+        resendBufferBtn.setOnClickListener(v -> {
+            NetworkBufferedSender.resendBuffered(getApplicationContext());
+            Toast.makeText(this, "Trying to resend buffered data...", Toast.LENGTH_SHORT).show();
+        });
+
 
         //Start Logic Form Here
 
@@ -49,9 +57,10 @@ public class MainActivity extends AppCompatActivity {
         if (!isSetupDone) {
             Toast.makeText(this, "🚫 Complete setup first...", Toast.LENGTH_SHORT).show();
 
-        } else if (!onStopBtnClicked) {
-            SendAndReceivePreferences.setboolean(getApplicationContext(), "onStopBtnClicked", true);
+        } else if (onStopBtnClicked) {
+            SendAndReceivePreferences.setboolean(getApplicationContext(), "onStopBtnClicked", false);
             displayMsg.setText("\uD83D\uDFE2 Server Started...");
+
         } else if (isSetupDone && onStopBtnClicked) {
             Toast.makeText(this, "⚙️ Server is already running.", Toast.LENGTH_SHORT).show();
         }
@@ -64,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "🚫 Complete setup first...", Toast.LENGTH_SHORT).show();
         }
 
-        SendAndReceivePreferences.setboolean(getApplicationContext(), "onStopBtnClicked", false);
+        SendAndReceivePreferences.setboolean(getApplicationContext(), "onStopBtnClicked", true);
         displayMsg.setText("\uD83D\uDD34 Server Stopped...");
     }
 

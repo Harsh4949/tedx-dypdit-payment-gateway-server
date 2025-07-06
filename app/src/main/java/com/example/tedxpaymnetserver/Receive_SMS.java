@@ -5,8 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
@@ -23,12 +21,14 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import retrofit2.Call;
+
 public class Receive_SMS extends BroadcastReceiver {
 
     private static final ExecutorService executor = Executors.newFixedThreadPool(6);
     private static final long DEBOUNCE_INTERVAL_MS = 2000; // 2 seconds to prevent double-processing
     private static final Set<String> recentRefs = new HashSet<>();
-    private static long lastProcessedTime = 0;
+    private static final long lastProcessedTime = 0;
 
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
@@ -36,7 +36,7 @@ public class Receive_SMS extends BroadcastReceiver {
 
         boolean isSetupDone = SendAndReceivePreferences.getboolean(context, "isServerSetupDone", false);
         boolean onStopBtnClicked = SendAndReceivePreferences.getboolean(context, "onStopBtnClicked", false);
-        if (!(onStopBtnClicked && isSetupDone)) return; // Exit if not setup
+        if (!(!(onStopBtnClicked) && isSetupDone)) return; // Exit if not setup
 
         // 👇 Hold the broadcast to do async work safely
         final PendingResult pendingResult = goAsync();
@@ -82,27 +82,33 @@ public class Receive_SMS extends BroadcastReceiver {
 
             if (refNo != null && extractedAmount != null) {
 
-                // Duplicate prevention with debounce + recent ref tracking
-                synchronized (recentRefs) {
-                    long now = System.currentTimeMillis();
-                    if ((now - lastProcessedTime) < DEBOUNCE_INTERVAL_MS || recentRefs.contains(refNo)) {
-                        Log.d("Receive_SMS", "Duplicate or debounce triggered for: " + refNo);
-                        return;
-                    }
-                    lastProcessedTime = now;
-                    recentRefs.add(refNo);
-
-                    // Remove refNo from set after 5 minutes
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> recentRefs.remove(refNo), 5 * 60 * 1000);
-                }
+//                // Duplicate prevention with debounce + recent ref tracking
+//                synchronized (recentRefs) {
+//                    long now = System.currentTimeMillis();
+//                    if ((now - lastProcessedTime) < DEBOUNCE_INTERVAL_MS || recentRefs.contains(refNo)) {
+//                        Log.d("Receive_SMS", "Duplicate or debounce triggered for: " + refNo);
+//                        return;
+//                    }
+//                    lastProcessedTime = now;
+//                    recentRefs.add(refNo);
+//
+//                    // Remove refNo from set after 5 minutes
+//                    new Handler(Looper.getMainLooper()).postDelayed(() -> recentRefs.remove(refNo), 5 * 60 * 1000);
+//                }
 
                 boolean validAmount = UpiRefValidator.containsValidAmount(msg, expectedAmountList);
                 boolean hasContext = UpiRefValidator.containsValidContext(msg, contextKeywords);
                 boolean hasValidSender = UpiRefValidator.hasValidSeder(msg, expectedSender, msgReceivedSenderBank);
 
-                if (validAmount && hasContext && hasValidSender) {  // &&ValidSendr Add removed for testing..
+                if (validAmount && hasContext) {  // && hasValidSender Add,-> removed for testing..
 
                     LocalTransactionStorage.saveTransaction(context, new TransactionModel(refNo, extractedAmount, getCurrentDateTime()));
+
+                    //send Data to server
+                    NetworkBufferedSender.trySend(context,
+                            new TransactionData(refNo, extractedAmount, getCurrentDateTime(), serverHolder, expectedSender));
+
+                    //sendDataToServer(refNo, extractedAmount, getCurrentDateTime(), serverHolder, expectedSender);
 
                     // UI feedback for debugging (optional, remove in production)
                     Log.d("Receive_SMS", "Received: " + refNo + " " + extractedAmount);
@@ -125,10 +131,28 @@ public class Receive_SMS extends BroadcastReceiver {
 
     private String getCurrentDateTime() {
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss a");
         return now.format(formatter);
     }
 
+    private void sendDataToServer(String refNo, String amount, String timeReceived, String serverHolder, String bankName) {
+
+        ApiService apiService = RetrofitClient.getApiService();
+        TransactionData data = new TransactionData(refNo, amount, timeReceived, serverHolder, bankName);
+
+        apiService.sendTransaction(data).enqueue(new retrofit2.Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
+                Log.d("Retrofit", "Success: " + response.code());
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("Retrofit", "Error: " + t.getMessage());
+            }
+        });
+
+    }
 
     private static class UpiRefValidator {
 

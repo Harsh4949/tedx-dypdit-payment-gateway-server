@@ -36,7 +36,6 @@
         android:onClick="onSetupServer"
         android:textStyle="bold"
         android:fontFamily="@font/montserratli"
-        android:textColor="#FFFFFF"
         android:layout_above="@id/center_point"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="80dp"/>
@@ -50,8 +49,6 @@
         android:onClick="onStartServer"
         android:fontFamily="@font/montserratli"
         android:textStyle="bold"
-
-        android:textColor="#FFFFFF"
         android:layout_toLeftOf="@id/center_point"
         android:layout_centerVertical="true"
         android:layout_marginRight="50dp"/>
@@ -65,8 +62,6 @@
         android:onClick="onStopServer"
         android:fontFamily="@font/montserratli"
         android:textStyle="bold"
-
-        android:textColor="#FFFFFF"
         android:layout_toRightOf="@id/center_point"
         android:layout_centerVertical="true"
         android:layout_marginLeft="50dp"/>
@@ -80,10 +75,20 @@
         android:fontFamily="@font/montserratli"
         android:textStyle="bold"
         android:onClick="onViewDashboard"
-        android:textColor="#FFFFFF"
         android:layout_below="@id/center_point"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="80dp"/>
+
+    <Button
+        android:id="@+id/btn_resend_buffer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/displayMsg"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="16dp"
+        android:fontFamily="@font/montserratli"
+        android:text="Resend Buffered Data"
+        android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"

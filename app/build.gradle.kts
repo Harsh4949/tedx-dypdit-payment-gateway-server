@@ -38,8 +38,11 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
 
-    // ✅ Add Gson for JSON serialization
+    //  Add Gson for JSON serialization & retrofit
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
