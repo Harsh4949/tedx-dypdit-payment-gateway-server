@@ -64,20 +64,53 @@ public class NetworkBufferedSender {
         });
     }
 
-    public static void resendBuffered(Context context) {
+    public static void resendBufferedWithCallback(Context context, Runnable onComplete) {
         loadBufferFromPreferences(context);
 
         if (bufferList.isEmpty()) {
             Log.d(TAG, "No buffered data to resend.");
+            if (onComplete != null) onComplete.run();
             return;
         }
 
-        // Make a copy to safely iterate
         List<TransactionData> copyList = new ArrayList<>(bufferList);
+        final int[] completedCount = {0};
 
         for (TransactionData data : copyList) {
-            send(context, data, true);
+            ApiService apiService = RetrofitClient.getApiService();
+
+            apiService.sendTransaction(data).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        bufferList.remove(data);
+                        saveBufferToPreferences(context);
+                        Log.d(TAG, "Sent from buffer: " + data.refNo);
+                    } else {
+                        Log.e(TAG, "Response failed: " + response.code());
+                    }
+                    checkComplete();
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.e(TAG, "Send failed: " + t.getMessage());
+                    checkComplete();
+                }
+
+                private void checkComplete() {
+                    completedCount[0]++;
+                    if (completedCount[0] == copyList.size()) {
+                        if (onComplete != null) onComplete.run();
+                    }
+                }
+            });
         }
+    }
+
+
+    public static void resendBuffered(Context context) {
+        resendBufferedWithCallback(context, null);
     }
 
 
@@ -107,5 +140,10 @@ public class NetworkBufferedSender {
             bufferList.clear();
             bufferList.addAll(loaded);
         }
+    }
+
+    public static int getBufferedCount(Context context) {
+        loadBufferFromPreferences(context);
+        return bufferList.size();
     }
 }

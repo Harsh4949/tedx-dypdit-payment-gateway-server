@@ -1,5 +1,7 @@
 package com.example.tedxpaymnetserver;
 
+import static com.example.tedxpaymnetserver.NetworkBufferedSender.getBufferedCount;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -17,13 +19,15 @@ public class MainActivity extends AppCompatActivity {
 
     TextView displayMsg;
     Boolean isSetupDone, onStopBtnClicked;
+    Button resendBufferBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        Button resendBufferBtn = findViewById(R.id.btn_resend_buffer);
+
+        resendBufferBtn = findViewById(R.id.btn_resend_buffer);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             String setServerStatus = ((!(onStopBtnClicked) && isSetupDone) ? "\uD83D\uDFE2 Server Started..." : "\uD83D\uDD34 Server Stopped...");
             ((TextView) findViewById(R.id.displayMsg)).setText(setServerStatus);
 
-            //initialize layout before it render
+            resendBufferBtn.setText("Buffer Size : " + getBufferedCount(this));
 
             return insets;
         });
@@ -43,13 +47,20 @@ public class MainActivity extends AppCompatActivity {
         displayMsg = findViewById(R.id.displayMsg);
 
         resendBufferBtn.setOnClickListener(v -> {
-            NetworkBufferedSender.resendBuffered(getApplicationContext());
+            resendBufferBtn.setEnabled(false);
             Toast.makeText(this, "Trying to resend buffered data...", Toast.LENGTH_SHORT).show();
+
+            NetworkBufferedSender.resendBufferedWithCallback(getApplicationContext(), () -> {
+                runOnUiThread(() -> {
+                    int count = NetworkBufferedSender.getBufferedCount(this);
+                    resendBufferBtn.setText("Buffer Size: " + count);
+                    resendBufferBtn.setEnabled(true);
+                    if (count == 0)
+                        Toast.makeText(this, "Buffer resend complete.", Toast.LENGTH_SHORT).show();
+                });
+            });
         });
-
-
         //Start Logic Form Here
-
     }
 
     public void onStartServer(View view) {

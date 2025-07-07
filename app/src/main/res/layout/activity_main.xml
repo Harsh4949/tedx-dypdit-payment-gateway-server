@@ -87,7 +87,7 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="16dp"
         android:fontFamily="@font/montserratli"
-        android:text="Resend Buffered Data"
+        android:text="Buffer Size : "
         android:textStyle="bold" />
 
     <TextView
