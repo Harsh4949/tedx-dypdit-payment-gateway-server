@@ -7,10 +7,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
 
-    private static final String BASE_URL = "https://webhook.site/3e97cbbb-64f8-4908-9ce2-272e323ecbb3/";
+
+    private static final String BASE_URL = "https://tedx-dypdit-portal-backend-production.up.railway.app/";
+
     private static Retrofit retrofit = null;
 
     public static ApiService getApiService() {
+
         if (retrofit == null) {
             HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
             logging.setLevel(HttpLoggingInterceptor.Level.BODY);

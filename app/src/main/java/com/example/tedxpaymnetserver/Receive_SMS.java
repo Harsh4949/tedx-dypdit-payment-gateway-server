@@ -104,7 +104,7 @@ public class Receive_SMS extends BroadcastReceiver {
 
                     LocalTransactionStorage.saveTransaction(context, new TransactionModel(refNo, extractedAmount, getCurrentDateTime()));
 
-                    //send Data to server
+                    //send Data to server using BUffer
                     NetworkBufferedSender.trySend(context,
                             new TransactionData(refNo, extractedAmount, getCurrentDateTime(), serverHolder, expectedSender));
 
