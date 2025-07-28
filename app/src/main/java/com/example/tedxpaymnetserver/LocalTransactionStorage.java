@@ -45,4 +45,5 @@ public class LocalTransactionStorage {
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         prefs.edit().remove(KEY_TRANSACTIONS).apply();   //  Only removes transaction data
     }
+
 }

@@ -106,8 +106,6 @@ public class Receive_SMS extends BroadcastReceiver {
                     NetworkBufferedSender.trySend(context,
                             new TransactionData(refNo, extractedAmount, getCurrentDateTime(), serverHolder, expectedSender));
 
-                    //sendDataToServer(refNo, extractedAmount, getCurrentDateTime(), serverHolder, expectedSender);
-
                     // UI feedback for debugging (optional, remove in production)
                     Log.d("Receive_SMS", "Received: " + refNo + " " + extractedAmount);
                 }

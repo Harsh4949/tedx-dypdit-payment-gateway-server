@@ -9,7 +9,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (NetworkBufferedSender.isNetworkAvailable(context)) {
+        if (NetworkBufferedSender.NetworkUtils.isNetworkAvailable(context)) {
             Log.d("NetworkChangeReceiver", "Internet is back, resending...");
             NetworkBufferedSender.resendBuffered(context);
         }

@@ -1,9 +1,15 @@
 package com.example.tedxpaymnetserver;
 
+import android.Manifest;
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresPermission;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -26,7 +32,7 @@ public class NetworkBufferedSender {
         bufferList.add(data);
         saveBufferToPreferences(context); // Always store it first
 
-        if (isNetworkAvailable(context)) {
+        if (NetworkUtils.isNetworkAvailable(context)) {
             resendBuffered(context); // Try to send the entire buffer (including this new one)
         } else {
             Log.d(TAG, "Offline: Saved to buffer");
@@ -110,11 +116,44 @@ public class NetworkBufferedSender {
     }
 
     public static boolean isNetworkAvailable(Context context) {
-        ConnectivityManager cm = (ConnectivityManager)
-                context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo active = cm.getActiveNetworkInfo();
-        return active != null && active.isConnected();
+        return NetworkUtils.isNetworkAvailable(context);
     }
+
+    static class NetworkUtils {
+
+        @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
+        @SuppressWarnings("deprecation") // Suppress warning for older versions
+        public static boolean isNetworkAvailable(Context context) {
+            if (context == null) {
+                return false;
+            }
+            ConnectivityManager cm = (ConnectivityManager)
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            if (cm == null) {
+                return false;
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) { // M is API 23
+                Network activeNetwork = cm.getActiveNetwork();
+                if (activeNetwork == null) {
+                    return false;
+                }
+                NetworkCapabilities networkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+                if (networkCapabilities == null) {
+                    return false;
+                }
+                // Check for internet capability and validated (actually connected to internet)
+                return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                        && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+            } else {
+                // For older versions, use the deprecated method
+                NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
+                return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+            }
+        }
+    }
+
 
     private static void saveBufferToPreferences(Context context) {
         String json = new Gson().toJson(bufferList);
@@ -141,4 +180,6 @@ public class NetworkBufferedSender {
         loadBufferFromPreferences(context);
         return bufferList.size();
     }
+
+
 }
