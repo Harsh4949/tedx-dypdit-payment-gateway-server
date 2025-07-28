@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             NetworkBufferedSender.resendBufferedWithCallback(getApplicationContext(), () -> {
                 runOnUiThread(() -> {
                     int count = NetworkBufferedSender.getBufferedCount(this);
-                    resendBufferBtn.setText("Buffer Size: " + count);
+                    resendBufferBtn.setText("Buffer Size : " + count);
                     resendBufferBtn.setEnabled(true);
                     if (count == 0)
                         Toast.makeText(this, "Buffer resend complete.", Toast.LENGTH_SHORT).show();

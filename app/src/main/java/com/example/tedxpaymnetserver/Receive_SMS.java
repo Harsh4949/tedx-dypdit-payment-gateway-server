@@ -21,8 +21,6 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import retrofit2.Call;
-
 public class Receive_SMS extends BroadcastReceiver {
 
     private static final ExecutorService executor = Executors.newFixedThreadPool(6);
@@ -135,24 +133,6 @@ public class Receive_SMS extends BroadcastReceiver {
         return now.format(formatter);
     }
 
-    private void sendDataToServer(String refNo, String amount, String timeReceived, String serverHolder, String bankName) {
-
-        ApiService apiService = RetrofitClient.getApiService();
-        TransactionData data = new TransactionData(refNo, amount, timeReceived, serverHolder, bankName);
-
-        apiService.sendTransaction(data).enqueue(new retrofit2.Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
-                Log.d("Retrofit", "Success: " + response.code());
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.e("Retrofit", "Error: " + t.getMessage());
-            }
-        });
-
-    }
 
     private static class UpiRefValidator {
 

@@ -190,20 +190,38 @@
                 android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Admin Password -->
+        <!-- Api Full URI-->
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/AdminpasswordLayout"
+            android:id="@+id/apifullurilayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Admin Password"
-            app:passwordToggleEnabled="true">
+            android:hint="API Full Uri">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/adminPassword"
+                android:id="@+id/apifulluri"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
+                android:fontFamily="@font/montserratli"
+                android:inputType="text"
+                android:textStyle="bold" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- reqired root -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/reqiredrootlayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Only Reqired Root (eg. /sendrefno)">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/reqiredroot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserratli"
+                android:inputType="text"
+                android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Confirm Button -->

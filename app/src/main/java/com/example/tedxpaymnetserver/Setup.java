@@ -26,7 +26,7 @@ public class Setup extends AppCompatActivity {
     public static final int ADMIN_INTENT = 15, REquestlocation = 1;
     static Switch adminPermission, smsPermission;
     Button confirmSetupBtn;
-    EditText ticketAmount, serverHolder, adminPassword, BankNameMsg, MsgContext;
+    EditText ticketAmount, serverHolder, BankNameMsg, MsgContext, apifulluri, reqiredroot;
     DevicePolicyManager mDevicePolicyManager;
     ComponentName mComponentName;
 
@@ -50,8 +50,11 @@ public class Setup extends AppCompatActivity {
                 BankNameMsg.setEnabled(false);
                 MsgContext.setText(SendAndReceivePreferences.retriveData(getApplicationContext(), "MsgContext", ""));
                 MsgContext.setEnabled(false);
+                apifulluri.setText(SendAndReceivePreferences.retriveData(getApplicationContext(), "apifulluri", ""));
+                apifulluri.setEnabled(false);
+                reqiredroot.setText(SendAndReceivePreferences.retriveData(getApplicationContext(), "reqiredroot", ""));
+                reqiredroot.setEnabled(false);
                 confirmSetupBtn.setVisibility(View.GONE);
-                findViewById(R.id.AdminpasswordLayout).setVisibility(View.GONE);
             }
 
             return insets;
@@ -67,9 +70,10 @@ public class Setup extends AppCompatActivity {
         confirmSetupBtn = findViewById(R.id.confirmSetupBtn);
         ticketAmount = findViewById(R.id.ticketAmount);
         serverHolder = findViewById(R.id.serverHolder);
-        adminPassword = findViewById(R.id.adminPassword);
         BankNameMsg = findViewById(R.id.BankNameMsg);
         MsgContext = findViewById(R.id.MsgContext);
+        apifulluri = findViewById(R.id.apifulluri);
+        reqiredroot = findViewById(R.id.reqiredroot);
 
         smsPermission.setChecked(SendAndReceivePreferences.getboolean(getApplicationContext(), "smsPermission", false));
         adminPermission.setChecked(SendAndReceivePreferences.getboolean(getApplicationContext(), "adminPermission", false));
@@ -78,13 +82,19 @@ public class Setup extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (smsPermission.isChecked() && adminPermission.isChecked() && !ticketAmount.getText().toString().isEmpty() && !serverHolder.getText().toString().isEmpty() && (adminPassword.getText().toString()).equals("Harsh@4949")) {
+                if (smsPermission.isChecked() && adminPermission.isChecked()
+                        && !ticketAmount.getText().toString().isEmpty()
+                        && !serverHolder.getText().toString().isEmpty()
+                        && !reqiredroot.getText().toString().isEmpty()
+                        && !apifulluri.getText().toString().isEmpty()) {
 
 
                     SendAndReceivePreferences.storeData(getApplicationContext(), "bankSenderId", BankNameMsg.getText().toString());
                     SendAndReceivePreferences.storeData(getApplicationContext(), "MsgContext", MsgContext.getText().toString());
                     SendAndReceivePreferences.storeData(getApplicationContext(), "ticketAmounts", ticketAmount.getText().toString());
                     SendAndReceivePreferences.storeData(getApplicationContext(), "serverHolder", serverHolder.getText().toString());
+                    SendAndReceivePreferences.storeData(getApplicationContext(), "apifulluri", apifulluri.getText().toString());
+                    SendAndReceivePreferences.storeData(getApplicationContext(), "reqiredroot", reqiredroot.getText().toString());
                     SendAndReceivePreferences.setboolean(getApplicationContext(), "isServerSetupDone", true);
 
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));

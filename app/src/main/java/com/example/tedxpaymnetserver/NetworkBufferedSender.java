@@ -18,7 +18,6 @@ import retrofit2.Response;
 
 public class NetworkBufferedSender {
 
-
     private static final String TAG = "BufferedSender";
     private static final List<TransactionData> bufferList = new ArrayList<>();
     private static final String PREF_KEY = "transaction_buffer_list";
@@ -34,15 +33,13 @@ public class NetworkBufferedSender {
         }
     }
 
-
     private static void send(Context context, TransactionData data, boolean fromBuffer) {
-        ApiService apiService = RetrofitClient.getApiService();
+        ApiService apiService = RetrofitClient.getApiService(context);
+        String requiredRoot = SendAndReceivePreferences.retriveData(context, "reqiredroot", "");
 
-        apiService.sendTransaction(data).enqueue(new Callback<Void>() {
-
+        apiService.sendTransaction(requiredRoot, data).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-
                 if (response.isSuccessful()) {
                     Log.d(TAG, (fromBuffer ? "Sent from buffer: " : "Sent live: ") + data.refNo);
                     bufferList.remove(data);
@@ -55,7 +52,6 @@ public class NetworkBufferedSender {
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.e(TAG, "Failed to send data: " + t.getMessage());
-
                 if (!fromBuffer) {
                     bufferList.add(data); // Save back if live failed
                     saveBufferToPreferences(context);
@@ -77,9 +73,10 @@ public class NetworkBufferedSender {
         final int[] completedCount = {0};
 
         for (TransactionData data : copyList) {
-            ApiService apiService = RetrofitClient.getApiService();
+            ApiService apiService = RetrofitClient.getApiService(context);
+            String requiredRoot = SendAndReceivePreferences.retriveData(context, "reqiredroot", "");
 
-            apiService.sendTransaction(data).enqueue(new Callback<Void>() {
+            apiService.sendTransaction(requiredRoot, data).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
@@ -108,11 +105,9 @@ public class NetworkBufferedSender {
         }
     }
 
-
     public static void resendBuffered(Context context) {
         resendBufferedWithCallback(context, null);
     }
-
 
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager cm = (ConnectivityManager)
