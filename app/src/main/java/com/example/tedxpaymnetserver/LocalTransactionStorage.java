@@ -2,6 +2,7 @@ package com.example.tedxpaymnetserver;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -35,19 +36,25 @@ public class LocalTransactionStorage {
         return new Gson().fromJson(json, type);
     }
 
-    public static void removeTransaction(Context context, String refNo) {
+    public static void updateTransaction(Context context, TransactionData transaction) {
         List<TransactionData> list = getAllTransactions(context);
-        if (list == null || list.isEmpty()) return;
 
-        // Remove transaction by refNo
-        List<TransactionData> updatedList = new ArrayList<>();
+        boolean isUpdated = false;
         for (TransactionData data : list) {
-            if (!data.getRefNo().equals(refNo)) {
-                updatedList.add(data);
+            // Find the transaction by refNo and update it
+            if (data.getRefNo().equals(transaction.getRefNo())) {
+                data.setStatus("Sent");
+                isUpdated = true;
+                break;
             }
         }
 
-        saveTransactionList(context, updatedList);
+        if (isUpdated) {
+            // Save the updated list back to persistent storage (SharedPreferences, DB, etc.)
+            saveTransactionList(context, list); // Assuming saveTransactions handles saving the list
+        } else {
+            Log.e("updateTransaction", "Transaction with refNo " + transaction.getRefNo() + " not found.");
+        }
     }
 
     private static void saveTransactionList(Context context, List<TransactionData> list) {

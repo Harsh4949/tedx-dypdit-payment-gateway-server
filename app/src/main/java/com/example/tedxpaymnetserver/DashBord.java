@@ -133,20 +133,6 @@ public class DashBord extends AppCompatActivity {
         totalAmountTextView.setText("₹ " + String.format("%.2f", totalAmount));
     }
 
-    public void changeEntryDashBord(TransactionData data) {
-        transactions = LocalTransactionStorage.getAllTransactions(this);
-
-        LinearLayout container = findViewById(R.id.transactionListContainer);
-        container.removeAllViews();
-
-        for (TransactionData transaction : transactions) {
-            if (data.getRefNo().equals(transaction.getRefNo())) {
-                LocalTransactionStorage.removeTransaction(this, data.getRefNo());
-            }
-        }
-
-        addTransactionCard(data.getRefNo(), data.getAmount(), data.getTimestamp(), data.getStatus());
-    }
 
 
     public void onclearDataBtnClicked(View view) {

@@ -100,7 +100,7 @@ public class Receive_SMS extends BroadcastReceiver {
                 boolean hasContext = UpiRefValidator.containsValidContext(msg, contextKeywords);
                 boolean hasValidSender = UpiRefValidator.hasValidSeder(msg, expectedSender, msgReceivedSenderBank);
 
-                if (validAmount && hasContext) {  //  Add,&& hasValidSender-> removed for testing..
+                if (validAmount && hasContext && hasValidSender) {  //  Add,&& hasValidSender-> removed for testing..
 
                     LocalTransactionStorage.saveTransaction(context, new TransactionData(refNo, extractedAmount, getCurrentDateTime(), serverHolder, expectedSender));
 

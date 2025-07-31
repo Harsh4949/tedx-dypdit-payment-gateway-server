@@ -90,7 +90,7 @@ public class NetworkBufferedSender {
                         bufferList.remove(data);
                         saveBufferToPreferences(context);
                         data.setStatus("Sent");
-                        new DashBord().changeEntryDashBord(data);
+                        LocalTransactionStorage.updateTransaction(context,data);
                         Log.d(TAG, "Sent from buffer: " + data.refNo);
                     } else {
                         Log.e(TAG, "Response failed: " + response.code());
