@@ -82,17 +82,18 @@ public class NetworkBufferedSender {
         for (TransactionData data : copyList) {
             ApiService apiService = RetrofitClient.getApiService(context);
             String requiredRoot = SendAndReceivePreferences.retriveData(context, "reqiredroot", "");
-
+            data.setStatus("Sent");
             apiService.sendTransaction(requiredRoot, data).enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
                         bufferList.remove(data);
                         saveBufferToPreferences(context);
-                        data.setStatus("Sent");
                         LocalTransactionStorage.updateTransaction(context,data);
                         Log.d(TAG, "Sent from buffer: " + data.refNo);
                     } else {
+                        data.setStatus("Pending");
+                        LocalTransactionStorage.updateTransaction(context,data);
                         Log.e(TAG, "Response failed: " + response.code());
                     }
                     checkComplete();
