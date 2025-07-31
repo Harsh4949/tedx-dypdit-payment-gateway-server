@@ -16,24 +16,41 @@ public class LocalTransactionStorage {
     private static final String PREF_NAME = "TransactionPref";
     private static final String KEY_TRANSACTIONS = "transactions";
 
-    public static void saveTransaction(Context context, TransactionModel transaction) {
-        List<TransactionModel> list = getAllTransactions(context);
+    public static void saveTransaction(Context context, TransactionData transaction) {
+        List<TransactionData> list = getAllTransactions(context);
         list.add(transaction);
         saveTransactionList(context, list);
     }
 
-    public static List<TransactionModel> getAllTransactions(Context context) {
+
+
+    public static List<TransactionData> getAllTransactions(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String json = prefs.getString(KEY_TRANSACTIONS, null);
 
         if (json == null) return new ArrayList<>();
-        Type type = new TypeToken<List<TransactionModel>>() {
+        Type type = new TypeToken<List<TransactionData>>() {
         }.getType();
 
         return new Gson().fromJson(json, type);
     }
 
-    private static void saveTransactionList(Context context, List<TransactionModel> list) {
+    public static void removeTransaction(Context context, String refNo) {
+        List<TransactionData> list = getAllTransactions(context);
+        if (list == null || list.isEmpty()) return;
+
+        // Remove transaction by refNo
+        List<TransactionData> updatedList = new ArrayList<>();
+        for (TransactionData data : list) {
+            if (!data.getRefNo().equals(refNo)) {
+                updatedList.add(data);
+            }
+        }
+
+        saveTransactionList(context, updatedList);
+    }
+
+    private static void saveTransactionList(Context context, List<TransactionData> list) {
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         String json = new Gson().toJson(list);

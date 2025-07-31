@@ -21,7 +21,7 @@ import java.util.List;
 
 public class DashBord extends AppCompatActivity {
 
-    List<TransactionModel> transactions;
+    static List<TransactionData>  transactions;
     int totalTransactions = 0;
     double totalAmount = 0.00;
 
@@ -46,7 +46,7 @@ public class DashBord extends AppCompatActivity {
 
     }
 
-    private void addTransactionCard(String refNo, String amount, String time) {
+    private void addTransactionCard(String refNo, String amount, String time, String status) {
         // Create CardView
         CardView cardView = new CardView(this);
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
@@ -83,10 +83,20 @@ public class DashBord extends AppCompatActivity {
         timeText.setTextSize(14f);
         timeText.setTextColor(Color.GRAY);
 
+        // Status
+        TextView textStatus = new TextView(this);
+        textStatus.setText(status);
+        textStatus.setTextSize(14f);
+        if (status.equals("Sent"))
+            textStatus.setTextColor(Color.GREEN);
+        else
+            textStatus.setTextColor(Color.RED);
+
         // Add views to layout
         innerLayout.addView(refText);
         innerLayout.addView(amountText);
         innerLayout.addView(timeText);
+        innerLayout.addView(textStatus);
         cardView.addView(innerLayout);
 
         // Add card to container
@@ -107,8 +117,8 @@ public class DashBord extends AppCompatActivity {
         container.removeAllViews();
 
         // Loop through each transaction and populate UI
-        for (TransactionModel transaction : transactions) {
-            addTransactionCard(transaction.getRefNo(), transaction.getAmount(), transaction.getTimestamp());
+        for (TransactionData transaction : transactions) {
+            addTransactionCard(transaction.getRefNo(), transaction.getAmount(), transaction.getTimestamp() ,transaction.getStatus());
 
             try {
                 totalAmount += Double.parseDouble(transaction.getAmount());
@@ -121,6 +131,21 @@ public class DashBord extends AppCompatActivity {
         // Set totals in summary TextViews
         totalTransactionsTextView.setText(String.valueOf(totalTransactions));
         totalAmountTextView.setText("₹ " + String.format("%.2f", totalAmount));
+    }
+
+    public void changeEntryDashBord(TransactionData data) {
+        transactions = LocalTransactionStorage.getAllTransactions(this);
+
+        LinearLayout container = findViewById(R.id.transactionListContainer);
+        container.removeAllViews();
+
+        for (TransactionData transaction : transactions) {
+            if (data.getRefNo().equals(transaction.getRefNo())) {
+                LocalTransactionStorage.removeTransaction(this, data.getRefNo());
+            }
+        }
+
+        addTransactionCard(data.getRefNo(), data.getAmount(), data.getTimestamp(), data.getStatus());
     }
 
 

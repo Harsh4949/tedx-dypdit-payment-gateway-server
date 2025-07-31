@@ -5,6 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
@@ -26,7 +28,7 @@ public class Receive_SMS extends BroadcastReceiver {
     private static final ExecutorService executor = Executors.newFixedThreadPool(6);
     private static final long DEBOUNCE_INTERVAL_MS = 2000; // 2 seconds to prevent double-processing
     private static final Set<String> recentRefs = new HashSet<>();
-    private static final long lastProcessedTime = 0;
+    private static long lastProcessedTime = 0;
 
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
@@ -80,27 +82,27 @@ public class Receive_SMS extends BroadcastReceiver {
 
             if (refNo != null && extractedAmount != null) {
 
-//                // Duplicate prevention with debounce + recent ref tracking
-//                synchronized (recentRefs) {
-//                    long now = System.currentTimeMillis();
-//                    if ((now - lastProcessedTime) < DEBOUNCE_INTERVAL_MS || recentRefs.contains(refNo)) {
-//                        Log.d("Receive_SMS", "Duplicate or debounce triggered for: " + refNo);
-//                        return;
-//                    }
-//                    lastProcessedTime = now;
-//                    recentRefs.add(refNo);
-//
-//                    // Remove refNo from set after 5 minutes
-//                    new Handler(Looper.getMainLooper()).postDelayed(() -> recentRefs.remove(refNo), 5 * 60 * 1000);
-//                }
+                // Duplicate prevention with debounce + recent ref tracking
+                synchronized (recentRefs) {
+                    long now = System.currentTimeMillis();
+                    if ((now - lastProcessedTime) < DEBOUNCE_INTERVAL_MS || recentRefs.contains(refNo)) {
+                        Log.d("Receive_SMS", "Duplicate or debounce triggered for: " + refNo);
+                        return;
+                    }
+                    lastProcessedTime = now;
+                    recentRefs.add(refNo);
+
+                    // Remove refNo from set after 5 minutes
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> recentRefs.remove(refNo), 5 * 60 * 1000);
+                }
 
                 boolean validAmount = UpiRefValidator.containsValidAmount(msg, expectedAmountList);
                 boolean hasContext = UpiRefValidator.containsValidContext(msg, contextKeywords);
                 boolean hasValidSender = UpiRefValidator.hasValidSeder(msg, expectedSender, msgReceivedSenderBank);
 
-                if (validAmount && hasContext) {  // && hasValidSender Add,-> removed for testing..
+                if (validAmount && hasContext) {  //  Add,&& hasValidSender-> removed for testing..
 
-                    LocalTransactionStorage.saveTransaction(context, new TransactionModel(refNo, extractedAmount, getCurrentDateTime()));
+                    LocalTransactionStorage.saveTransaction(context, new TransactionData(refNo, extractedAmount, getCurrentDateTime(), serverHolder, expectedSender));
 
                     //send Data to server using BUffer
                     NetworkBufferedSender.trySend(context,
@@ -142,7 +144,8 @@ public class Receive_SMS extends BroadcastReceiver {
 
         private static boolean containsValidAmount(String msg, List<String> amounts) {
             for (String amt : amounts) {
-                if (msg.contains(amt)) {
+                if (msg.contains(amt) && Math.round(Double.parseDouble(extractValidAmount(msg)))==Math.round(Double.parseDouble(amt))) {
+                    
                     return true;
                 }
             }
@@ -169,7 +172,7 @@ public class Receive_SMS extends BroadcastReceiver {
         private static String extractValidAmount(String msg) {
             // Regex Explanation:
             // Optional INR/Rs followed by up to 4 digits (optionally with comma like 1,000) ending with .00
-            Pattern pattern = Pattern.compile("(?:INR\\s*|Rs\\.\\s*)?(\\d{1,4}(?:,\\d{3})?)\\.00\\b");
+            Pattern pattern = Pattern.compile("(?:INR\\s*|Rs\\.\\s*)?(\\d{1,3}(?:,\\d{2}){1,2}|\\d{1,3}(?:,\\d{3})*|\\d+)\\.00\\b");
             Matcher matcher = pattern.matcher(msg);
             if (matcher.find()) {
                 return matcher.group(1); // ✅ Captures the amount before `.00`

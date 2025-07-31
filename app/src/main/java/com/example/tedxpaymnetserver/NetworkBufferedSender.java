@@ -47,6 +47,7 @@ public class NetworkBufferedSender {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
+
                     Log.d(TAG, (fromBuffer ? "Sent from buffer: " : "Sent live: ") + data.refNo);
                     bufferList.remove(data);
                     saveBufferToPreferences(context); // Update buffer
@@ -88,6 +89,8 @@ public class NetworkBufferedSender {
                     if (response.isSuccessful()) {
                         bufferList.remove(data);
                         saveBufferToPreferences(context);
+                        data.setStatus("Sent");
+                        new DashBord().changeEntryDashBord(data);
                         Log.d(TAG, "Sent from buffer: " + data.refNo);
                     } else {
                         Log.e(TAG, "Response failed: " + response.code());
