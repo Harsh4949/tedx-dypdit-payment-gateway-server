@@ -98,7 +98,7 @@ public class Receive_SMS extends BroadcastReceiver {
 
                 boolean validAmount = UpiRefValidator.containsValidAmount(msg, expectedAmountList);
                 boolean hasContext = UpiRefValidator.containsValidContext(msg, contextKeywords);
-                boolean hasValidSender = UpiRefValidator.hasValidSeder(msg, expectedSender, msgReceivedSenderBank);
+                boolean hasValidSender = UpiRefValidator.hasValidSender( expectedSender, msgReceivedSenderBank);
 
                 if (validAmount && hasContext && hasValidSender) {  //  Add,&& hasValidSender-> removed for testing..
 
@@ -136,10 +136,23 @@ public class Receive_SMS extends BroadcastReceiver {
 
     private static class UpiRefValidator {
 
+        private static String extractBankCode(String senderId) {
+            String[] parts = senderId.split("-");
+            if (parts.length == 3) {
+                return parts[1]; // Middle part
+            }
+            return senderId; // If already trimmed or unexpected format
+        }
 
-        public static Boolean hasValidSeder(String msg, String expectedSenderBank, String msgReceivedSenderBank) {
+        public static Boolean hasValidSender(String expectedSenderBank, String msgReceivedSenderBank) {
+            if (expectedSenderBank == null || msgReceivedSenderBank == null) {
+                return false;
+            }
 
-            return expectedSenderBank.equals(msgReceivedSenderBank); // Block all unknown senders
+            String trimmedExpected = extractBankCode(expectedSenderBank);
+            String trimmedReceived = extractBankCode(msgReceivedSenderBank);
+
+            return trimmedExpected.equalsIgnoreCase(trimmedReceived);
         }
 
         private static boolean containsValidAmount(String msg, List<String> amounts) {
