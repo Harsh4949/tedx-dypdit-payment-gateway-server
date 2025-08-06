@@ -8,6 +8,7 @@ import retrofit2.http.POST;
 public interface ApiService {
 
     //    @POST("queue-received-payments")
+    //https://tedx-dypdit-portal-backend-production.up.railway.app/
 
     @POST
     Call<Void> sendTransaction(@retrofit2.http.Url String url, @Body TransactionData data);

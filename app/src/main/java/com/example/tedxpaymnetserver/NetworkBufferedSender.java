@@ -8,6 +8,7 @@ import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresPermission;
 
@@ -78,7 +79,7 @@ public class NetworkBufferedSender {
 
         List<TransactionData> copyList = new ArrayList<>(bufferList);
         final int[] completedCount = {0};
-
+        try {
         for (TransactionData data : copyList) {
             ApiService apiService = RetrofitClient.getApiService(context);
             String requiredRoot = SendAndReceivePreferences.retriveData(context, "reqiredroot", "");
@@ -89,11 +90,11 @@ public class NetworkBufferedSender {
                     if (response.isSuccessful()) {
                         bufferList.remove(data);
                         saveBufferToPreferences(context);
-                        LocalTransactionStorage.updateTransaction(context,data);
+                        LocalTransactionStorage.updateTransaction(context, data);
                         Log.d(TAG, "Sent from buffer: " + data.refNo);
                     } else {
                         data.setStatus("Pending");
-                        LocalTransactionStorage.updateTransaction(context,data);
+                        LocalTransactionStorage.updateTransaction(context, data);
                         Log.e(TAG, "Response failed: " + response.code());
                     }
                     checkComplete();
@@ -112,6 +113,10 @@ public class NetworkBufferedSender {
                     }
                 }
             });
+        }
+
+        } catch (Exception e) {
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
